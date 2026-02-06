@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/fcm_provider.dart';
 import 'register_screen.dart'; // อย่าลืม import หน้าสมัครสมาชิก
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -18,6 +19,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _login() async {
     setState(() => _isLoading = true);
     try {
+      final response = await ref.read(authServiceProvider).signIn(_emailController.text.trim(), _passwordController.text.trim());
+
+      if (response.user != null) {
+        // ✅ เพิ่มบรรทัดนี้: Login ปุ๊บ เก็บ Token ปั๊บ
+        await saveDeviceToken(response.user!.id);
+      }
       await ref.read(authServiceProvider).signIn(_emailController.text.trim(), _passwordController.text.trim());
       // ถ้า Login สำเร็จ ระบบจะเปลี่ยนหน้าให้อัตโนมัติ (ถ้าตั้งค่า main.dart ไว้ถูกต้อง)
     } catch (e) {
