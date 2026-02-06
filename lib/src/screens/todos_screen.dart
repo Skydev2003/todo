@@ -24,6 +24,7 @@ class _TodosScreenState extends ConsumerState<TodosScreen> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
+              ref.invalidate(todosProvider);
               ref.read(authServiceProvider).signOut();
             },
           ),

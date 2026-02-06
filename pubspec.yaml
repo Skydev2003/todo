@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^3.2.1
+  riverpod: ^3.2.1
   supabase_flutter: ^2.12.0
 
 dev_dependencies:
