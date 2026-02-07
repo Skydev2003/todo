@@ -11,10 +11,12 @@ dependencies:
   firebase_messaging: ^16.1.1
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^20.0.0
   flutter_riverpod: ^3.2.1
   riverpod: ^3.2.1
   supabase_flutter: ^2.12.0
-
+  timezone: ^0.10.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
