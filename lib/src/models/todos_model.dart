@@ -15,27 +15,35 @@ class TodosModel {
     required this.createdAt,
   });
 
-  factory TodosModel.fromJson(Map<String, dynamic> json) {
+ factory TodosModel.fromJson(Map<String, dynamic> json) {
     return TodosModel(
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      isCompleted: json['isCompleted'] ?? false,
+      isCompleted: json['is_completed'] ?? false,
       reminderTime: json['reminder_time'] != null
           ? DateTime.parse(json['reminder_time'])
+                .toLocal() // แนะนำใส่ .toLocal() ด้วยเพื่อให้เวลาตรง
           : null,
       createdAt: DateTime.parse(json['created_at']),
     );
   }
-  // เพิ่ม function นี้เพื่อใช้ตอนส่งข้อมูลไป Save/Update ที่ Supabase
-  Map<String, dynamic> toJson() {
-    return {
-      // id ไม่ต้องส่งไปตอน create เพราะ Database จะ gen ให้เอง
-      'title': title,
-      'description': description,
-      'is_completed': isCompleted,
-      'reminder_time': reminderTime?.toIso8601String(),
-      // created_at ปกติไม่ต้องส่ง ให้ DB จัดการเอง หรือส่งเฉพาะตอนจำเป็น
-    };
+
+  TodosModel copyWith({
+    int? id,
+    String? title,
+    String? description,
+    bool? isCompleted,
+    DateTime? reminderTime,
+    DateTime? createdAt,
+  }) {
+    return TodosModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      isCompleted: isCompleted ?? this.isCompleted,
+      reminderTime: reminderTime ?? this.reminderTime,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }
