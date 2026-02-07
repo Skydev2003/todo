@@ -1,22 +1,28 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo/src/screens/todos_screen.dart';
 import 'firebase_options.dart';
 import 'src/providers/auth_provider.dart';
-import 'src/providers/fcm_provider.dart';
+import 'src/services/fcm_service.dart';
 import 'src/screens/login_screen.dart';
+import 'src/services/local_notification_service.dart';
 import 'supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 3. เริ่มต้น Firebase (เพิ่มตรงนี้!)
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
+  await LocalNotificationService.init();
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // เรียกใช้ฟังก์ชันแถมที่เขียนไว้
+    LocalNotificationService.showFirebaseNotification(message);
+  });
+  
   runApp(const ProviderScope(child: MyApp()));
 }
 
