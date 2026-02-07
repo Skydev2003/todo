@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../providers/fcm_provider.dart';
+import '../services/fcm_service.dart';
 import 'register_screen.dart'; // อย่าลืม import หน้าสมัครสมาชิก
 
 class LoginScreen extends ConsumerStatefulWidget {

@@ -1,62 +1,64 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
+
 import '../models/todos_model.dart';
 import '../services/todos_service.dart';
 
 // 1. Provider สำหรับ Service
+// (อันนี้ใช้ Provider ธรรมดา ต้องรับ (ref) ถูกแล้ว)
 final todosServiceProvider = Provider<TodosService>((ref) {
   return TodosService();
 });
 
-final todosProvider = StreamNotifierProvider<TodosNotifier, List<TodosModel>>(() {
-  return TodosNotifier();
-});
+// 2. Main Provider (ตัวปัญหา)
+// ✅ แก้ไข: ใช้ TodosNotifier.new แทนการเขียน function ยาวๆ เพื่อกันพลาด
+final todosProvider = StreamNotifierProvider.autoDispose<TodosNotifier, List<TodosModel>>(TodosNotifier.new);
 
-// ✅ แก้ไขตรงนี้: extends "StreamNotifier" ธรรมดา (ลบคำว่า AutoDispose ออก)
+// 3. Class Notifier
+// ✅ แก้ไข: ต้อง extends StreamNotifier (สำหรับ StreamNotifierProvider)
 class TodosNotifier extends StreamNotifier<List<TodosModel>> {
   @override
   Stream<List<TodosModel>> build() {
-    // เชื่อมต่อกับ Stream จาก Service
+    // ✅ ใน build() สามารถเรียกใช้ ref ได้เลย (Riverpod เตรียมไว้ให้แล้ว)
     return ref.read(todosServiceProvider).getTodosStream();
   }
 
-  // ฟังก์ชันเพิ่ม
+  // --- ฟังก์ชัน Action ต่างๆ ---
+
   Future<void> addTodo(String title, String? description, DateTime? reminderTime) async {
     try {
+      // ✅ เรียก ref.read ได้เลย
       final service = ref.read(todosServiceProvider);
       await service.addTodo(title, description, reminderTime);
     } catch (e) {
-      rethrow; // ถ้ามี error ให้ส่ง error ต่อไป
+      print("Add Error: $e");
     }
   }
 
-  // ฟังก์ชันอัพเดต
   Future<void> updateTodo(int id, String title, String? description, DateTime? reminderTime) async {
     try {
       final service = ref.read(todosServiceProvider);
       await service.updateTodo(id, title, description, reminderTime);
     } catch (e) {
-      rethrow; // ถ้ามี error ให้ส่ง error ต่อไป
+      print("Update Error: $e");
     }
   }
 
-  // ฟังก์ชันเปลี่ยนสถานะ
   Future<void> toggleStatus(int id, bool isCompleted) async {
     try {
       final service = ref.read(todosServiceProvider);
       await service.toggleTodoStatus(id, isCompleted);
     } catch (e) {
-      rethrow; // ถ้ามี error ให้ส่ง error ต่อไป
+      print("Toggle Error: $e");
     }
   }
 
-  // ฟังก์ชันลบ
   Future<void> deleteTodo(int id) async {
     try {
       final service = ref.read(todosServiceProvider);
       await service.deleteTodo(id);
     } catch (e) {
-      rethrow; // ถ้ามี error ให้ส่ง error ต่อไป
+      print("Delete Error: $e");
     }
   }
 }
